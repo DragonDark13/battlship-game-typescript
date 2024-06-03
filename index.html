@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vite + React + TS</title>
+</head>
+<body>
+<div id="root">
+    <div id="player" class="board">
+        <p>Your Fleet</p>
+    </div>
+    <div id="computer" class="board">
+        <p>Enemy Fleet</p>
+    </div>
+    <div id="selector">
+        <div id="ships">
+            <div class="destroyer" draggable="true">destroyer</div>
+            <div class="submarine" draggable="true">submarine</div>
+            <div class="cruiser" draggable="true">cruiser</div>
+            <div class="battleship" draggable="true">battleship</div>
+            <div class="career" draggable="true">career</div>
+        </div>
+        <button id="rotate">rotate</button>
+        <button id="start" disabled>start</button>
+    </div>
+</div>
+<script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
