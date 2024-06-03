@@ -3,7 +3,24 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-
+const messages = {
+    init: "Drag your ships to the map.",
+    start: "Please click start to proceed",
+    "your turn": "Your turn! Find and destroy all five enemy ships",
+    won: "You won!!",
+    lost: "Tough luck!! Computer won!",
+    hit: "Boom, enemy ship is hit",
+    miss: "Oops, nothing there",
+    "already hit": "This cell is already hit. Try a new target",
+    computer: "Computer thinking...",
+    "computer hit": "Computer hit your ship",
+    "computer miss": "Computer missed",
+    destroyer: "A destroyer is sunk!",
+    submarine: "A submarine is sunk!",
+    cruiser: "A cruiser is sunk!",
+    battleship: "A battleship is sunk!",
+    career: "A career is sunk!",
+};
 // Rotate options
 let isFlipped = false;
 const rotate = () => {

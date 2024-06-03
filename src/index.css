@@ -114,6 +114,12 @@ button:disabled {
     grid-column: 1 / -1;
 }
 
+#message {
+    font-size: 20px;
+    color: darkblue;
+    transition: opacity 0.5s ease-in-out;
+}
+
 /* Cell */
 .cell {
     aspect-ratio: 1/1;
@@ -147,6 +153,7 @@ button:disabled {
 .cell.hit {
     background: red;
 }
+
 .cell.miss {
     background: #666;
 }
