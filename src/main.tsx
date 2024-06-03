@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import set = Reflect.set;
 
 const messages = {
     init: "Drag your ships to the map.",
@@ -223,6 +224,54 @@ const onDrop = (e: DragEvent) => {
     }
 }
 
+
+let gameOver = false;
+let turn: "computer" | "player" = 'computer';
+const playerHits: string[] = [];
+const computerHits: string[] = [];
+const startGame = () => {
+    turn = "player"
+    computerCells.forEach(cell => cell.addEventListener('click', handlePlayerClick))
+
+    document.getElementById("start")?.setAttribute("disabled", "true")
+    changeMessage(messages["your turn"])
+}
+
+document.getElementById('start')?.addEventListener('click', startGame)
+myCells.forEach(cell => {
+    cell.addEventListener("dragover", onDragOver)
+    cell.addEventListener("dragleave", onDragLeave)
+    cell.addEventListener("drop", onDrop)
+})
+
+
+const computerTurn = () => {
+    changeMessage(messages.computer);
+
+    setTimeout(() => {
+        const validTarget = myCells.filter(
+            (cell) => !cell.classList.contains("hit") && !cell.classList.contains("miss")
+        )
+        const target = validTarget[Math.floor(Math.random() * validTarget.length)]
+
+        if (target.classList.contains("taken")) {
+            const shipType = target.classList.toString().split("cell taken ")[1]
+            computerHits.push(shipType)
+            changeMessage(messages["computer hit"])
+            target.classList.add('hit');
+        } else {
+            changeMessage(messages["computer miss"])
+            target.classList.add('miss')
+        }
+    }, 1000)
+
+    setTimeout(() => {
+        changeMessage(messages["your turn"])
+        turn = "player"
+    }, 2000)
+
+
+}
 const handlePlayerClick = (e: MouseEvent) => {
     if (gameOver) return;
 
@@ -233,6 +282,8 @@ const handlePlayerClick = (e: MouseEvent) => {
             return;
         }
         if (target.classList.contains("taken")) {
+            const shipType = target.classList.toString().split("cell taken ")[1]
+            playerHits.push(shipType)
             target.classList.add('hit')
             changeMessage(messages.hit)
         } else {
@@ -240,25 +291,13 @@ const handlePlayerClick = (e: MouseEvent) => {
 
             target.classList.add('miss')
         }
+
+        turn = "computer";
+        setTimeout(computerTurn, 1000)
     }
+
+    console.log(playerHits);
 }
-
-let gameOver = false;
-let turn: "player"
-const startGame = () => {
-    turn = "player"
-    computerCells.forEach(cell => cell.addEventListener('click', handlePlayerClick))
-
-    document.getElementById("start")?.setAttribute("disabled","true")
-    changeMessage(messages["your turn"])
-}
-
-document.getElementById('start')?.addEventListener('click', startGame)
-myCells.forEach(cell => {
-    cell.addEventListener("dragover", onDragOver)
-    cell.addEventListener("dragleave", onDragLeave)
-    cell.addEventListener("drop", onDrop)
-})
 
 
 ships.forEach(ship => ship.addEventListener("mousedown", onDragStart))
