@@ -21,6 +21,17 @@ const messages = {
     battleship: "A battleship is sunk!",
     career: "A career is sunk!",
 };
+
+const messageContainer = document.getElementById("message") as HTMLElement;
+const changeMessage = (newText: string) => {
+    messageContainer.style.opacity = "0";
+
+    setTimeout(() => {
+        messageContainer.innerHTML = newText;
+        messageContainer.style.opacity = "1";
+    }, 250);
+};
+changeMessage(messages.init);
 // Rotate options
 let isFlipped = false;
 const rotate = () => {
@@ -208,6 +219,7 @@ const onDrop = (e: DragEvent) => {
         document.getElementById('rotate')?.removeEventListener("click", rotate)
         document.getElementById('rotate')?.setAttribute('disabled', 'true');
         document.getElementById('start')?.removeAttribute('disabled');
+        changeMessage(messages.start)
     }
 }
 
@@ -217,12 +229,15 @@ const handlePlayerClick = (e: MouseEvent) => {
     if (turn === "player") {
         const target = e.target as HTMLElement;
         if (target.classList.contains("hit") || target.classList.contains('miss')) {
-            console.log("try again");
+            changeMessage(messages["already hit"])
             return;
         }
         if (target.classList.contains("taken")) {
             target.classList.add('hit')
+            changeMessage(messages.hit)
         } else {
+            changeMessage(messages.miss)
+
             target.classList.add('miss')
         }
     }
@@ -233,6 +248,9 @@ let turn: "player"
 const startGame = () => {
     turn = "player"
     computerCells.forEach(cell => cell.addEventListener('click', handlePlayerClick))
+
+    document.getElementById("start")?.setAttribute("disabled","true")
+    changeMessage(messages["your turn"])
 }
 
 document.getElementById('start')?.addEventListener('click', startGame)
