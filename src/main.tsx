@@ -23,6 +23,22 @@ const messages = {
     career: "A career is sunk!",
 };
 
+const checkSunkShip = (shipType: string) => {
+    const size = allShips.find(ship => ship.name === shipType)!.size
+
+    const sunkSize = turn === "player" ?
+        playerHits.filter(hit => hit === shipType).length :
+        computerHits.filter(hit => hit === shipType).length;
+
+    if (size === sunkSize) {
+        turn === "player" ?
+            playerSunkShips.push(shipType) :
+            computerSunkShips.push(shipType)
+        return true
+    }
+    return false
+}
+
 const messageContainer = document.getElementById("message") as HTMLElement;
 const changeMessage = (newText: string) => {
     messageContainer.style.opacity = "0";
@@ -229,6 +245,9 @@ let gameOver = false;
 let turn: "computer" | "player" = 'computer';
 const playerHits: string[] = [];
 const computerHits: string[] = [];
+
+const playerSunkShips: string[] = [];
+const computerSunkShips: string[] = [];
 const startGame = () => {
     turn = "player"
     computerCells.forEach(cell => cell.addEventListener('click', handlePlayerClick))
@@ -245,8 +264,43 @@ myCells.forEach(cell => {
 })
 
 
+const checkGameOver = () => {
+    if (playerSunkShips.length === 5) {
+        changeMessage(messages.won);
+        gameOver = true;
+        return;
+    }
+    if (computerSunkShips.length === 5) {
+        changeMessage(messages.lost);
+        gameOver = true;
+        return;
+    }
+};
+
+const getPriorityTargets = () => {
+    const hits = myCells.filter(cell => cell.classList.contains('hit')).filter(cell => {
+        const shipRegex = /cell taken (.+?) hit/
+        const match = cell.classList.toString().match(shipRegex)
+        const ship = match?.[1] || ''
+        return !computerSunkShips.includes(ship)
+    })
+
+    const candidateIDs = new Set();
+    hits.forEach(cell => {
+        const id = Number(cell.id.split("cell-")[1]);
+        if (id % 10 !== 0) candidateIDs.add(id - 1)
+        if (id % 10 !== 9) candidateIDs.add(id + 1)
+        if (id>9) candidateIDs.add(id - 1)
+        if (id <90>) candidateIDs.add(id - 1)
+    })
+}
+
 const computerTurn = () => {
+    checkGameOver();
+
+    if (gameOver) return;
     changeMessage(messages.computer);
+
 
     setTimeout(() => {
         const validTarget = myCells.filter(
@@ -266,6 +320,9 @@ const computerTurn = () => {
     }, 1000)
 
     setTimeout(() => {
+        checkGameOver();
+
+        if (gameOver) return
         changeMessage(messages["your turn"])
         turn = "player"
     }, 2000)
@@ -286,6 +343,12 @@ const handlePlayerClick = (e: MouseEvent) => {
             playerHits.push(shipType)
             target.classList.add('hit')
             changeMessage(messages.hit)
+
+            if (checkSunkShip(shipType)) {
+                changeMessage(messages[shipType as keyof typeof messages])
+            } else {
+                changeMessage(messages.hit)
+            }
         } else {
             changeMessage(messages.miss)
 
