@@ -290,9 +290,18 @@ const getPriorityTargets = () => {
         const id = Number(cell.id.split("cell-")[1]);
         if (id % 10 !== 0) candidateIDs.add(id - 1)
         if (id % 10 !== 9) candidateIDs.add(id + 1)
-        if (id>9) candidateIDs.add(id - 1)
+        if (id > 9) candidateIDs.add(id - 1)
         if (id <90>) candidateIDs.add(id - 1)
     })
+
+    const validOnes = [...candidateIDs]
+        .map((id) => myCells.find((div) => div.id === `cell-${id}`))
+        .filter(
+            (cell) =>
+                !cell?.classList.contains("hit") && !cell?.classList.contains("miss")
+        );
+
+    return validOnes as HTMLElement[];
 }
 
 const computerTurn = () => {
@@ -303,10 +312,21 @@ const computerTurn = () => {
 
 
     setTimeout(() => {
-        const validTarget = myCells.filter(
-            (cell) => !cell.classList.contains("hit") && !cell.classList.contains("miss")
-        )
-        const target = validTarget[Math.floor(Math.random() * validTarget.length)]
+
+        const priorityTargets = getPriorityTargets();
+        let target;
+
+        if (priorityTargets.length) {
+            target =
+                priorityTargets[Math.floor(Math.random() * priorityTargets.length)];
+        } else {
+            const validTargets = myCells.filter(
+                (cell) =>
+                    !cell.classList.contains("miss") && !cell.classList.contains("hit")
+            );
+            target = validTargets[Math.floor(Math.random() * validTargets.length)];
+        }
+
 
         if (target.classList.contains("taken")) {
             const shipType = target.classList.toString().split("cell taken ")[1]
