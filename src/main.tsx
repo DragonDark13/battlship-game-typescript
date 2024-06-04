@@ -1,8 +1,4 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
-import set = Reflect.set;
 
 const messages = {
     init: "Drag your ships to the map.",
@@ -148,10 +144,9 @@ const onDragStart = (e: MouseEvent) => {
     draggingShip = (e.target as HTMLElement).classList[0]
 }
 
-const myCells = Array.from(playerBoard.getElementsByClassName("cell") as HTMLElement[])
+const myCells = Array.from(playerBoard.getElementsByClassName("cell") ) as HTMLElement[]
 const computerCells = Array.from(
-    computerBoard.getElementsByClassName("cell") as HTMLElement[]
-)
+    computerBoard.getElementsByClassName("cell")) as HTMLElement[]
 
 const draggableShips = Array.from(
     document.querySelectorAll("#ships div")
@@ -188,6 +183,7 @@ const onDragOver = (e: DragEvent) => {
 }
 
 const onDragLeave = (e: DragEvent) => {
+    e.preventDefault();
     myCells.forEach(cell => cell.classList.remove('highlight'))
 }
 
@@ -291,7 +287,7 @@ const getPriorityTargets = () => {
         if (id % 10 !== 0) candidateIDs.add(id - 1)
         if (id % 10 !== 9) candidateIDs.add(id + 1)
         if (id > 9) candidateIDs.add(id - 1)
-        if (id <90>) candidateIDs.add(id - 1)
+        if (id < 90) candidateIDs.add(id - 1)
     })
 
     const validOnes = [...candidateIDs]
@@ -384,8 +380,3 @@ const handlePlayerClick = (e: MouseEvent) => {
 
 
 ships.forEach(ship => ship.addEventListener("mousedown", onDragStart))
-// ReactDOM.createRoot(document.getElementById('root')!).render(
-//   <React.StrictMode>
-//     <App />
-//   </React.StrictMode>,
-// )
