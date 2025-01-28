@@ -144,7 +144,12 @@ const onDragStart = (e: MouseEvent) => {
     draggingShip = (e.target as HTMLElement).classList[0]
 }
 
-const myCells = Array.from(playerBoard.getElementsByClassName("cell") ) as HTMLElement[]
+const onTouchStart = (e: TouchEvent) => {
+    draggingShip = (e.target as HTMLElement).id;
+}
+
+
+const myCells = Array.from(playerBoard.getElementsByClassName("cell")) as HTMLElement[]
 const computerCells = Array.from(
     computerBoard.getElementsByClassName("cell")) as HTMLElement[]
 
@@ -171,7 +176,8 @@ const checkValidTarget = (id: number) => {
         return true;
     }
 }
-const onDragOver = (e: DragEvent) => {
+
+const elementOver = (e: DragEvent | TouchEvent) => {
     e.preventDefault();
     const targetId = (e.target as HTMLElement).id;
     const id = Number(targetId.split('cell-')[1])
@@ -179,7 +185,17 @@ const onDragOver = (e: DragEvent) => {
 
     if (isValidDrop) {
         highlightCells(id)
+    } else {
+        myCells.forEach(cell => cell.classList.remove('highlight'))
     }
+}
+
+const onDragOver = (e: DragEvent) => {
+    elementOver(e);
+}
+
+const onTouchMove = (e: TouchEvent) => {
+    elementOver(e);
 }
 
 const onDragLeave = (e: DragEvent) => {
@@ -200,8 +216,8 @@ const highlightCells = (id: number) => {
 
 let draggingShip = '';
 
-const onDrop = (e: DragEvent) => {
-    console.log(e.target);
+const onDropElem=(e:DragEvent|TouchEvent)=>{
+        console.log(e.target);
     e.preventDefault()
 
     const highlightedCell = myCells.filter((cell) =>
@@ -234,6 +250,15 @@ const onDrop = (e: DragEvent) => {
         document.getElementById('start')?.removeAttribute('disabled');
         changeMessage(messages.start)
     }
+
+}
+
+const onDrop = (e: DragEvent) => {
+    onDropElem(e);
+}
+
+const onTouchEnd = (e: TouchEvent) => {
+    onDropElem(e);
 }
 
 
@@ -257,6 +282,9 @@ myCells.forEach(cell => {
     cell.addEventListener("dragover", onDragOver)
     cell.addEventListener("dragleave", onDragLeave)
     cell.addEventListener("drop", onDrop)
+    cell.addEventListener("touchstart", onTouchStart)
+    cell.addEventListener("touchmove", onTouchMove)
+    cell.addEventListener("touchend", onTouchEnd)
 })
 
 
